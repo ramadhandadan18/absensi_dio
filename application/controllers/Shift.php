@@ -9,6 +9,7 @@ class Shift extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Shift_m');
+        $this->load->model('Pegawai_m');
         $this->load->library('PHPExcel');
 
         if (!$this->session->userdata('is_login') == true) {
@@ -246,19 +247,60 @@ class Shift extends CI_Controller
         die(json_encode($response));
     }
 
-    public function save_add()
+    public function save_add_data()
     {
-        $data = array(
-            'nama_div' => $_POST['nama_div'],
-        );
+        // load excel
+        $file = $_FILES['file']['tmp_name'];
+        $load = PHPExcel_IOFactory::load($file);
+        $sheets = $load->getActiveSheet()->toArray();
 
-        $result = $this->Divisi_m->save_add($data);
+        // echopre($sheets[1]);
 
-        if ($result) {
-            echo json_encode(1);
-        } else {
-            echo json_encode(0);
+        $data = [];
+        $periode = null;
+
+        foreach ($sheets as $k => $v) {
+            if($k == 1)
+            $periode = $v[1]; 
+            if($k >= 4)
+            array_push($data, $v);
         }
+        // echopre($periode);
+
+        foreach ($data as $k => $v) {
+            $tgl = 1;
+            $itr = 0;
+            foreach ($v as $kk => $vv) {
+                if($kk >= 5){
+                    $map[$itr]['nik'] = $v['4'];
+                    $map[$itr]['date'] = $periode.'-'.$tgl;
+                    $map[$itr]['shift'] = $vv;
+
+                    $tgl++;
+                    $itr++;
+                }
+            }
+        }
+        // $checkNip = $this->Pegawai_m->cek_id('001');
+        // echopre($checkNip);
+        $ins = 0;
+        foreach ($map as $k => $v) {
+            $checkNip = $this->Pegawai_m->cek_id($v['nik']);
+            if(!empty($checkNip)){
+                $data = array(
+                    'id_pegawai' => $checkNip,
+                    'shift' => $v['shift'],
+                    'date' => $v['date'],
+                    
+                );
+                $insert = $this->Shift_m->save_add($data);
+                if($insert)
+                $ins++;
+            }
+        }
+
+        echopre($ins);
+        
     }
 
     public function get_data_by_id($id)

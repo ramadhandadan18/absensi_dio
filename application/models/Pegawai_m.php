@@ -94,14 +94,25 @@ class Pegawai_m extends CI_Model
 
     public function cek_id($nip)
     {
+        $ret = "";
         $dt = $this->db
             ->select('id_pegawai')
             ->from('master_pegawai')
             ->where('no_pegawai', $nip)
             ->limit(1)
-            ->get()
-            ->row()->id_pegawai;
-        return $dt;
+            ->get()->result_array();
+        // return $dt;
+        if ($dt) {
+            $get = $this->db
+                    ->select('id_pegawai')
+                    ->from('master_pegawai')
+                    ->where('no_pegawai', $nip)
+                    ->limit(1)
+                    ->get()
+                    ->row()->id_pegawai;
+            $ret = $get;
+        }
+        return $ret;
     }
 
     public function save_add($data)

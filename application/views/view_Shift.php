@@ -75,16 +75,14 @@
             <form method="post" action="" enctype="multipart/form-data" id="myform">
                 <div class="form-row">
                     <div class="form-group col">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="customFile">
-                            <label class="custom-file-label" for="customFile">Choose file</label>
-                        </div>
+                        <input type="file" class="file_template" id="file_template">
+                        <!-- <label class="custom-file-label" for="customFile">Choose file</label> -->
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="save_add_pegawai()">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="save_add_data(event)">Save changes</button>
             </form>
             </div>
         </div>
@@ -285,6 +283,32 @@
                 $a.attr("download","Template Jadwal Shift - "+$('#fill_tanggal').val()+".xls");
                 $a[0].click();
                 $a.remove();
+            }
+        });
+    }
+
+    function save_add_data(event){
+        event.preventDefault();
+
+        var myFile = $('#file_template').prop('files')[0];
+        var form_data = new FormData();                  
+        form_data.append('file', myFile);
+        // console.log(myFile);
+
+        $.ajax({
+            type: "POST",
+            url: '<?php echo base_url() ?>Shift/save_add_data',
+            contentType: false,
+            processData: false,
+            data: form_data,
+            success: function(data) {
+                console.log(data);
+                // var $a = $("<a>");
+                // $a.attr("href",data.file);
+                // $("body").append($a);
+                // $a.attr("download","Template Jadwal Shift - "+$('#fill_tanggal').val()+".xls");
+                // $a[0].click();
+                // $a.remove();
             }
         });
     }
