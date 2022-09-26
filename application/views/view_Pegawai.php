@@ -30,6 +30,7 @@
                                     <th width="10%">Email</th>
                                     <th width="10%">Divisi</th>
                                     <th width="10%">Sub Divisi</th>
+                                    <th width="10%">MAC ADDRESS</th>
                                     <th width="10%">Assign Area</th>
                                     <th width="5%">Action</th>
                                 </tr>
@@ -138,6 +139,12 @@
                         <div class="form-group col">
                             <strong>Provinsi</strong>
                             <input type="text" class="form-control" id="provinsi" name="provinsi" placeholder="Provinsi" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <strong>MAC ADDRESS</strong>
+                            <input type="text" class="form-control" id="macaddress" name="macaddress" placeholder="Mac Address" required>
                         </div>
                     </div>
                 </div>
@@ -249,6 +256,12 @@
                         <div class="form-group col">
                             <strong>Provinsi</strong>
                             <input type="text" class="form-control" id="provinsi_edit" name="provinsi_edit" placeholder="Provinsi" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <strong>MAC ADDRESS</strong>
+                            <input type="macaddress" class="form-control" id="macaddress_edit" name="macaddress_edit" placeholder="Mac Address" required>
                         </div>
                     </div>
                 </div>
@@ -582,6 +595,7 @@
                             'email': item['email'],
                             'nama_div': item['nama_div'],
                             'nama_sub_div': item['nama_sub_div'],
+                            'macaddress': item['macaddress'],
                             'area': item['id_pegawai'] != '' ? (item['status_area'] == '1' ? btn_area1 : btn_area2) : '',
                             'action': item['id_pegawai'] != '' ? button : ''
                         })
@@ -633,6 +647,9 @@
                 },
                 {
                     data: 'nama_sub_div'
+                },
+                {
+                    data: 'macaddress'
                 },
                 {
                     data: 'area'
@@ -701,6 +718,7 @@
         $('#kecamatan').val('');
         $('#kabupaten').val('');
         $('#provinsi').val('');
+        $('#macaddress').val('');
         $('#add_pegawai_mdl').modal('show');
     }
 
@@ -721,6 +739,7 @@
         var kecamatan = $('#kecamatan').val();
         var kabupaten = $('#kabupaten').val();
         var provinsi = $('#provinsi').val();
+        var macaddress = $('#macaddress').val();
         var fd = new FormData();
 
         fd.append('no_ktp', no_ktp);
@@ -739,6 +758,7 @@
         fd.append('kecamatan', kecamatan);
         fd.append('kabupaten', kabupaten);
         fd.append('provinsi', provinsi);
+        fd.append('macaddress', macaddress);
 
         $.ajax({
             url: '<?php echo base_url() ?>Pegawai/save_add',
@@ -785,6 +805,7 @@
                 $('#kecamatan_edit').val(data.kecamatan);
                 $('#kabupaten_edit').val(data.kabupaten);
                 $('#provinsi_edit').val(data.provinsi);
+                $('#macaddress_edit').val(data.macaddress);
 
                 $('#header_edit_pegawai').html('Edit Data <span class="text-info">' + data.nama_pegawai + '</span>');
                 $('#edit_pegawai_mdl').modal("show");
@@ -818,6 +839,7 @@
         var kecamatan = $('#kecamatan_edit').val();
         var kabupaten = $('#kabupaten_edit').val();
         var provinsi = $('#provinsi_edit').val();
+        var macaddress = $('#macaddress_edit').val();
 
         var fd = new FormData();
         fd.append('id_pegawai', id_pegawai);
@@ -837,6 +859,7 @@
         fd.append('kecamatan', kecamatan);
         fd.append('kabupaten', kabupaten);
         fd.append('provinsi', provinsi);
+        fd.append('macaddress', macaddress);
 
         $.ajax({
             type: "POST",
