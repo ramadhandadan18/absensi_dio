@@ -7,16 +7,16 @@ class Login_m extends CI_Model
 
     function authorize($username, $password)
     {
-    	$result = $this->db            
+        $result = $this->db
             ->from('users')
-            ->where('password',$password)
-            ->where('username',$username)
+            ->where('password', $password)
+            ->where('username', $username)
             ->get()
             ->row();
         // return $dt;
         // echoq($this);
         // $this
-        // $result = $this->db->query($qy)->row();
+        //$result = $this->db->query($qy)->row();
         return $result;
     }
 }

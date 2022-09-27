@@ -8,11 +8,12 @@ class Pegawai_m extends CI_Model
     public function get_data()
     {
         $dt = $this->db
-            ->select('a.*, b.nama_div, c.nama_sub_div')
+            ->select('a.*, b.nama_div, c.nama_sub_div, d.macaddress')
             ->from('master_pegawai a')
             ->join('master_divisi b', 'a.id_div = b.id_div', 'left')
             ->join('master_sub_divisi c', 'a.id_sub_div = c.id_sub_div', 'left')
-            ->where('del', '0')
+            ->join('users d', 'a.id_pegawai = d.id_pegawai', 'left')
+            ->where('a.del', '0')
             ->order_by('a.id_pegawai', 'ASC')
             ->get()
             ->result_array();
@@ -151,11 +152,14 @@ class Pegawai_m extends CI_Model
 
         $qy = "
             SELECT
-                *
+                a.*,b.macaddress
             from
-                master_pegawai
+                master_pegawai a
+            left join
+                users b on 
+                a.id_pegawai = b.id_pegawai
             where 
-                id_pegawai = '" . $id . "'
+                a.id_pegawai = '" . $id . "'
         ";
         $result = $this->db->query($qy)->result_array();
         return $result;
@@ -180,6 +184,14 @@ class Pegawai_m extends CI_Model
     {
         $this->db->where('id_pegawai', $id);
         $result = $this->db->update('master_pegawai', $data);
+        // echo $this->db->last_query();die;        
+        return $result;
+    }
+
+    public function save_edit_mac($data, $id)
+    {
+        $this->db->where('id_pegawai', $id);
+        $result = $this->db->update('users', $data);
         // echo $this->db->last_query();die;        
         return $result;
     }

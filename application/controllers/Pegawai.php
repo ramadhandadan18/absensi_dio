@@ -63,6 +63,7 @@ class Pegawai extends CI_Controller
                 $dt_final[$i]['nama_sub_div'] = $v['nama_sub_div'];
                 $dt_final[$i]['email'] = $v['email'];
                 $dt_final[$i]['status_area'] = in_array($v['id_pegawai'], $id_pegawai) ? '1' : '0';
+                $dt_final[$i]['macaddress'] = $v['macaddress'];
                 $i++;
             }
         } else {
@@ -85,6 +86,7 @@ class Pegawai extends CI_Controller
             $dt_final[$i]['nama_sub_div'] = '';
             $dt_final[$i]['email'] = '';
             $dt_final[$i]['status_area'] = '';
+            $dt_final[$i]['macaddress'] = '';
         }
         // echopre($dt_final);
         $object = json_decode(json_encode($dt_final), FALSE);
@@ -214,6 +216,7 @@ class Pegawai extends CI_Controller
             'id_div' => $_POST['id_div'],
             'id_sub_div' => $_POST['id_sub_div'],
             'email' => $_POST['email']
+            //'macaddress' => $_POST['macaddress']
         );
 
         $result = $this->Pegawai_m->save_add($data);
@@ -223,7 +226,8 @@ class Pegawai extends CI_Controller
             'username' => $kd_nip,
             'password' => hash('md5', $kd_nip),
             'role' => 2,
-            'id_pegawai' => $id_pegawai
+            'id_pegawai' => $id_pegawai,
+            'macaddress' => $_POST['macaddress']
         );
         $this->Pegawai_m->save_users($data);
 
@@ -299,6 +303,7 @@ class Pegawai extends CI_Controller
             $data['id_div'] = $value['id_div'];
             $data['id_sub_div'] = $value['id_sub_div'];
             $data['email'] = $value['email'];
+            $data['macaddress'] = $value['macaddress'];
         }
         $data_obj = (object)$data;
         echo json_encode($data_obj);
@@ -329,8 +334,9 @@ class Pegawai extends CI_Controller
             'id_sub_div' => $_POST['id_sub_div'],
             'email' => $_POST['email']
         );
-
+        $data_mac = array('macaddress' => $_POST['macaddress']);
         $result = $this->Pegawai_m->save_edit($data, $id);
+        $result_mac = $this->Pegawai_m->save_edit_mac($data_mac, $id);
         if ($result) {
             echo json_encode(1);
         } else {
