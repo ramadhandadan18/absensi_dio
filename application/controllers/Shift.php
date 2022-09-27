@@ -36,28 +36,38 @@ class Shift extends CI_Controller
 
     public function get_data()
     {
-        $date_start = '2022-09-01';
-        $start = $month = strtotime($date_start);
-        $end = date("Y-m-t", strtotime($date_start));
-        $end_date = date("Y-m-d", strtotime($end . '+1 day'));
+        // echopre($_GET);
+        $date_arr = $this->getDateInMonth($_GET['periode']);
+        // echopre($date_arr);
+        $shift = $this->Shift_m->get_data($_GET['periode']);
 
-        // echopre($end_date);
-        $period = new DatePeriod(
-            new DateTime($date_start),
-            new DateInterval('P1D'),
-            new DateTime($end_date)
-        );
-
-        foreach ($period as $key => $value) {
-            $date_arr[$key]['date'] = $value->format('d');
-            $date_arr[$key]['day'] = $value->format('D');
+        // echopre($shift);
+        $shiftMap = [];
+        foreach ($shift as $k => $v) {
+            $shiftMap[$v['id_pegawai']]['no_pegawai'] = $v['no_pegawai'];
+            $shiftMap[$v['id_pegawai']]['nama_pegawai'] = $v['nama_pegawai'];
+            $shiftMap[$v['id_pegawai']]['no_telp'] = $v['no_telp'];
+            $shiftMap[$v['id_pegawai']]['shift'][$v['date']] = $v['shift'];
+            // foreach ($date_arr as $kk => $vv) {
+            //     $shiftMap[$v['id_pegawai']][$vv['date']] = $v['date'] == $vv['date'] ? $v['shift'] : "";
+            // }
+        }
+        // echopre(($shiftMap));
+        $data_shift = [];
+        $itr = 0;
+        foreach ($shiftMap as $k => $v) {
+            $data_shift[$itr]['no_pegawai'] = $v['no_pegawai'];
+            $data_shift[$itr]['nama_pegawai'] = $v['nama_pegawai'];
+            $data_shift[$itr]['no_telp'] = $v['no_telp'];
+            foreach ($date_arr as $kk => $vv) {
+                $data_shift[$itr][$vv['date']] = isset($v['shift'][$vv['date']]) ? $v['shift'][$vv['date']] : "";
+            }
+            $itr++;
         }
 
-        $data = [
-            "date" => $date_arr
-        ];
+        // echopre($data_shift);
 
-        $object = json_decode(json_encode($data), FALSE);
+        $object = json_decode(json_encode($data_shift), FALSE);
         echo json_encode(array('response' => $object));
     }
 
@@ -267,9 +277,9 @@ class Shift extends CI_Controller
         }
         // echopre($periode);
 
+        $itr = 0;
         foreach ($data as $k => $v) {
             $tgl = 1;
-            $itr = 0;
             foreach ($v as $kk => $vv) {
                 if($kk >= 5){
                     $map[$itr]['nik'] = $v['4'];
@@ -287,20 +297,19 @@ class Shift extends CI_Controller
         foreach ($map as $k => $v) {
             $checkNip = $this->Pegawai_m->cek_id($v['nik']);
             if(!empty($checkNip)){
-                $data = array(
+                $dataIns = array(
                     'id_pegawai' => $checkNip,
                     'shift' => $v['shift'],
                     'date' => $v['date'],
                     
                 );
-                $insert = $this->Shift_m->save_add($data);
+                $insert = $this->Shift_m->save_add($dataIns);
                 if($insert)
                 $ins++;
             }
         }
-
-        echopre($ins);
-        
+        // $data_obj = (object)$ins;
+        echo json_encode($ins);
     }
 
     public function get_data_by_id($id)

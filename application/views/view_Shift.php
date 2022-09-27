@@ -67,7 +67,7 @@
     <div class="modal-dialog modal-md">
         <div class="modal-content animated flipInY">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close btn-submit-import" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title">Import Jadwal Shift</h4>
             </div>
             <div class="modal-body">
@@ -81,8 +81,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="save_add_data(event)">Save changes</button>
+                <button type="button" class="btn btn-submit-import btn-white" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-submit-import btn-primary" onclick="save_add_data(event)">Save changes</button>
             </form>
             </div>
         </div>
@@ -135,17 +135,24 @@
         columns = [
                 {
                     title: 'No',
+                    data: 'no'
                 },
                 {
                     title: 'Nama Pegawai',
+                    data: 'nama_pegawai'
                 },
                 {
                     title: 'No. Telp',
+                    data: 'no_telp'
                 },
                 {
                     title: 'NIK',
+                    data: 'nik'
                 }
         ];
+
+        var date_arr = [];
+
         $.ajax({
             type: 'GET',
             async: false,
@@ -155,10 +162,12 @@
             success: function(data) {
                 // console.log(data);
                 $.each(data, function(key, value) {
-                    columns.push({title: value.date});
+                    columns.push({title: value.date, data:value.date});
+                    date_arr.push(value.date);
                 });
             }
         });
+        // console.log(columns);
 
         var fill_tanggal = $('#fill_tanggal').val() == '' ? 'ALL' : $('#fill_tanggal').val();
 
@@ -184,6 +193,32 @@
                     }
                 }
             },
+            ajax: {
+                url: "<?= base_url('Shift/get_data') ?>",
+                type: 'GET',
+                data:{periode: fill_tanggal},
+                dataSrc: function(json) {
+                    // console.log(json);
+                    var return_data = new Array()
+                    $.each(json['response'], function(i, item) {
+                        return_data.push({
+                            'no': (i + 1),
+                            'nama_pegawai': item['nama_pegawai'],
+                            'no_telp': item['no_telp'],
+                            'nik': item['no_pegawai'],
+                        })
+                        $.each(date_arr, function(ii, itemdate) {
+                            // return_data.push({
+                            //     [itemdate]: item[itemdate]
+                            // })
+                            Object.assign(return_data[i], {[itemdate]: item[itemdate]});
+                        })
+                    })
+                    // console.log(return_data);
+                    return return_data
+                }
+            },
+            
             // retrieve: true,
         });
         // var oTable = $('#main-table').DataTable({
@@ -289,6 +324,7 @@
 
     function save_add_data(event){
         event.preventDefault();
+        $('.btn-submit-import').prop('disabled', true);
 
         var myFile = $('#file_template').prop('files')[0];
         var form_data = new FormData();                  
@@ -302,13 +338,14 @@
             processData: false,
             data: form_data,
             success: function(data) {
-                console.log(data);
-                // var $a = $("<a>");
-                // $a.attr("href",data.file);
-                // $("body").append($a);
-                // $a.attr("download","Template Jadwal Shift - "+$('#fill_tanggal').val()+".xls");
-                // $a[0].click();
-                // $a.remove();
+                if (data > 1) {
+                    $('.btn-submit-import').prop('disabled', false);
+                    toastr.success(data+' data berhasil ditambahkan', 'Success');
+                    $('#import_shift_mdl').modal('hide');
+                    getMainTable();
+                } else {
+                    toastr.error("Data gagal diperbarui", 'Failed');
+                }
             }
         });
     }
