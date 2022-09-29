@@ -153,6 +153,31 @@ class Shift extends CI_Controller
             )
         );
 
+        $style_mandatory = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => 'ed5565;')
+                )
+        );
+
+        $style_col_mandatory = array(
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => 'ed5565;')
+            ),
+            'font' => array('bold' => true), // Set font nya jadi bold
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER, // Set text jadi ditengah secara horizontal (center)
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER // Set text jadi di tengah secara vertical (middle)
+            ),
+            'borders' => array(
+                'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN), // Set border top dengan garis tipis
+                'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),  // Set border right dengan garis tipis
+                'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN), // Set border bottom dengan garis tipis
+                'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN) // Set border left dengan garis tipis
+            )
+        );
+
         $excel->setActiveSheetIndex(0)->setCellValue('A1', "Template Jadwal Shift PT. Delta Indratama Orion"); // Set kolom A1 dengan tulisan "DATA SISWA"
         $excel->getActiveSheet()->mergeCells('A1:AI1'); // Set Merge Cell pada kolom A1 sampai F1
         $excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(TRUE); // Set bold kolom A1
@@ -162,6 +187,12 @@ class Shift extends CI_Controller
         $excel->setActiveSheetIndex(0)->setCellValue('A2', "Periode :");
         $excel->getActiveSheet()->getStyle('A2')->getFont()->setBold(TRUE); // Set bold kolom A1
         $excel->setActiveSheetIndex(0)->setCellValue('B2', $_GET['periode']);
+        $excel->setActiveSheetIndex()->getProtection()->setPassword('PTDIO');
+        $excel->setActiveSheetIndex()->getProtection()->setSheet(true);
+        $excel->setActiveSheetIndex()->getStyle('A5:AZ1000')->getProtection()->setLocked(PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
+
+        $excel->getActiveSheet()->getStyle('D2')->applyFromArray($style_col_mandatory);    
+        $excel->setActiveSheetIndex(0)->setCellValue('E2', ' * Wajib Diisi');
 
         // Buat header tabel nya pada baris ke 3
         $excel->setActiveSheetIndex(0)->setCellValue('A3', "NO"); // Set kolom A3 dengan tulisan "NO"
@@ -174,6 +205,7 @@ class Shift extends CI_Controller
         $excel->getActiveSheet()->mergeCells('D3:E3');
         $excel->setActiveSheetIndex(0)->setCellValue('D4', "NO. TELP"); // Set kolom E3 dengan tulisan "TELEPON"
         $excel->setActiveSheetIndex(0)->setCellValue('E4', "NIK"); // Set kolom F3 dengan tulisan "ALAMAT"
+        $excel->getActiveSheet()->getStyle('E4')->applyFromArray($style_mandatory); // Set font size 15 untuk kolom A1
 
         $startCol = range('A', 'Z');
         $continueCol = range('F', 'Z');
@@ -216,7 +248,7 @@ class Shift extends CI_Controller
                 $columnStyle = $continueCol[$indexColStyle];
             }
             for ($i=3; $i <= 4 ; $i++) { 
-                $excel->getActiveSheet()->getStyle($columnStyle.$i)->applyFromArray($style_col);    
+                $excel->getActiveSheet()->getStyle($columnStyle.$i)->applyFromArray($style_col_mandatory);    
             }
             $indexColStyle++;
         }

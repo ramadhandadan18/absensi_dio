@@ -1,3 +1,13 @@
+<style>
+    table.dataTable thead .weekend {
+        background-color: #ed5565;
+        color: #ffffff;
+    }
+    /* th.weekend {
+        background-color: red;
+    } */
+</style>
+
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-lg-12">
@@ -19,7 +29,7 @@
                 </div>
                 <div class="ibox-content">
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-hover dataTables-example" width="100%" id="main-table">
+                        <table class="table table-bordered table-hover dataTables-example" width="100%" id="main-table">
                             <thead>
                             </thead>
                             <tbody>
@@ -162,7 +172,11 @@
             success: function(data) {
                 // console.log(data);
                 $.each(data, function(key, value) {
-                    columns.push({title: value.date, data:value.date});
+                    if (value.day == 'Sat' || value.day == 'Sun') {
+                        columns.push({title: value.date+'<br>'+value.day, data:value.date, className: 'weekend'});
+                    }else{
+                        columns.push({title: value.date+'<br>'+value.day, data:value.date});
+                    }
                     date_arr.push(value.date);
                 });
             }
@@ -218,9 +232,24 @@
                     return return_data
                 }
             },
+            "rowCallback": function(row, data, index) {
+                $("td:eq(0)",row).addClass("text-center");
+                $.each(date_arr, function(i, itemdate) {
+                    var cellValue = data[itemdate];
+                    // console.log(cellValue);
+                    if (cellValue == "x" || cellValue == "X") 
+                        $("td:eq("+(i+4)+")",row).addClass("bg-danger");
+
+                    $("td:eq("+(i+4)+")",row).addClass("text-center");
+                })
+            },
             
             // retrieve: true,
         });
+     
+        // Wrap the colspan'ing header cells with a span so they can be positioned
+        // absolutely - filling the available space, and no more.
+        // $('#main-table thead th[colspan]').wrapInner( '<span/>' ).append( 'oioioioi' );
         // var oTable = $('#main-table').DataTable({
         //     processing: true,
         //     select: true,
