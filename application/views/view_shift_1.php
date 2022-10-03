@@ -14,7 +14,7 @@
         <div class="col-lg-12">
             <div class="ibox ">
                 <div class="ibox-title" style="background-color:#1494C6;color:white;">
-                    <h5>Verifikasi Permohonan Perubahan Jadwal</h5>
+                    <h5>Jadwal Shift Pegawai</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up text-white"></i>
@@ -74,7 +74,7 @@
     </div>
 </div>
 
-<div class="modal inmodal" id="import_shift_mdl" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- <div class="modal inmodal" id="import_shift_mdl" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content animated flipInY">
             <div class="modal-header">
@@ -87,7 +87,7 @@
                     <div class="form-row">
                         <div class="form-group col">
                             <input type="file" class="file_template" id="file_template">
-                            <!-- <label class="custom-file-label" for="customFile">Choose file</label> -->
+                            <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
                     </div>
             </div>
@@ -98,7 +98,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Mainly scripts -->
 <script src="<?php echo base_url() ?>assets/js/jquery-3.1.1.min.js"></script>
@@ -152,14 +152,6 @@
                 data: 'nama_pegawai'
             },
             {
-                title: 'Divisi',
-                data: 'nama_div'
-            },
-            {
-                title: 'Sub Divisi',
-                data: 'nama_sub_div'
-            },
-            {
                 title: 'No. Telp',
                 data: 'no_telp'
             },
@@ -201,29 +193,28 @@
         // console.log(columns);
 
         var fill_tanggal = $('#fill_tanggal').val() == '' ? 'ALL' : $('#fill_tanggal').val();
-
         oTable = $('#main-table').DataTable({
             scrolX: true,
             columns: columns,
             destroy: true,
-            dom: '<"html5buttons"B>lTfgitp',
-            buttons: {
-                buttons: [{
-                    text: '<i class="fa fa-plus-square"></i>&ensp;Import Data',
-                    action: function(e, dt, node, config) {
-                        importShift();
-                    }
-                }, ],
-                dom: {
-                    button: {
-                        tag: "button",
-                        className: "btn btn-primary btn-sm"
-                    },
-                    buttonLiner: {
-                        tag: null
-                    }
-                }
-            },
+            // dom: '<"html5buttons"B>lTfgitp',
+            // buttons: {
+            //     buttons: [{
+            //         // text: '<i class="fa fa-plus-square"></i>&ensp;Import Data',
+            //         // action: function(e, dt, node, config) {
+            //         //     importShift();
+            //         // }
+            //     }, ],
+            //     dom: {
+            //         // button: {
+            //         //     tag: "button",
+            //         //     className: "btn btn-primary btn-sm"
+            //         // },
+            //         // buttonLiner: {
+            //         //     tag: null
+            //         // }
+            //     }
+            // },
             ajax: {
                 url: "<?= base_url('Shift/get_data') ?>",
                 type: 'GET',
@@ -237,8 +228,6 @@
                         return_data.push({
                             'no': (i + 1),
                             'nama_pegawai': item['nama_pegawai'],
-                            'nama_div': item['nama_div'],
-                            'nama_sub_div': item['nama_sub_div'],
                             'no_telp': item['no_telp'],
                             'nik': item['no_pegawai'],
                         })
@@ -261,9 +250,9 @@
                     var cellValue = data[itemdate];
                     // console.log(cellValue);
                     if (cellValue == "x" || cellValue == "X")
-                        $("td:eq(" + (i + 6) + ")", row).addClass("bg-danger");
+                        $("td:eq(" + (i + 4) + ")", row).addClass("bg-danger");
 
-                    $("td:eq(" + (i + 6) + ")", row).addClass("text-center");
+                    $("td:eq(" + (i + 4) + ")", row).addClass("text-center");
                 })
             },
 

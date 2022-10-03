@@ -46,7 +46,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="container">
+		<!-- <div class="container">
 			<div class="row">
 				<div class="card" style="width: 90%;padding-bottom: 20px;border-radius: 12px;display: block;margin-left: auto;margin-right: auto;">
 					<div class="card-body">
@@ -61,14 +61,13 @@
 							<div class="row">
 								<div class="col-12">
 									<a href="<?php echo base_url() ?>Logout/" style='color: black;'><i class="fa fa-sign-out"></i> <span class="nav-label">&nbsp;Logout</span></a>
-									<!-- <button type="button" class="btn btn-danger" href="<?php echo base_url() ?>Logout/" style='color: white;'><i class="fa fa-sign-out"></i> <span class="nav-label">&nbsp;Logout</span></button> -->
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 
 	<!-- MODAL GANTI PASSWORD -->

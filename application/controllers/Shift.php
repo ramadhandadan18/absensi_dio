@@ -16,7 +16,7 @@ class Shift extends CI_Controller
             redirect('login');
         }
 
-        if ($_SESSION['role'] != '1') {
+        if ($_SESSION['role'] == '2') {
             redirect('logout');
         }
     }
@@ -34,6 +34,19 @@ class Shift extends CI_Controller
         $this->load->view('templates/footer');
     }
 
+    public function index2()
+    {
+        $periode = date('Y-m');
+        $data = [
+            "periode" => $periode
+        ];
+
+        $this->load->view('templates/bar');
+
+        $this->load->view('view_Shift_1', $data);
+        $this->load->view('templates/footer');
+    }
+
     public function get_data()
     {
         // echopre($_GET);
@@ -46,6 +59,8 @@ class Shift extends CI_Controller
         foreach ($shift as $k => $v) {
             $shiftMap[$v['id_pegawai']]['no_pegawai'] = $v['no_pegawai'];
             $shiftMap[$v['id_pegawai']]['nama_pegawai'] = $v['nama_pegawai'];
+            $shiftMap[$v['id_pegawai']]['nama_div'] = $v['nama_div']; //tambahan
+            $shiftMap[$v['id_pegawai']]['nama_sub_div'] = $v['nama_sub_div']; //tambahan
             $shiftMap[$v['id_pegawai']]['no_telp'] = $v['no_telp'];
             $shiftMap[$v['id_pegawai']]['shift'][$v['date']] = $v['shift'];
             // foreach ($date_arr as $kk => $vv) {
@@ -58,6 +73,8 @@ class Shift extends CI_Controller
         foreach ($shiftMap as $k => $v) {
             $data_shift[$itr]['no_pegawai'] = $v['no_pegawai'];
             $data_shift[$itr]['nama_pegawai'] = $v['nama_pegawai'];
+            $data_shift[$itr]['nama_div'] = $v['nama_div'];
+            $data_shift[$itr]['nama_sub_div'] = $v['nama_sub_div'];
             $data_shift[$itr]['no_telp'] = $v['no_telp'];
             foreach ($date_arr as $kk => $vv) {
                 $data_shift[$itr][$vv['date']] = isset($v['shift'][$vv['date']]) ? $v['shift'][$vv['date']] : "";
@@ -65,7 +82,7 @@ class Shift extends CI_Controller
             $itr++;
         }
 
-        // echopre($data_shift);
+        //echopre($data_shift);
 
         $object = json_decode(json_encode($data_shift), FALSE);
         echo json_encode(array('response' => $object));
@@ -73,8 +90,8 @@ class Shift extends CI_Controller
 
     public function getHeaderDate()
     {
-        $date_start = $_GET['periode'].'-01';
-        $start = $month = strtotime($date_start.'-01');
+        $date_start = $_GET['periode'] . '-01';
+        $start = $month = strtotime($date_start . '-01');
         $end = date("Y-m-t", strtotime($date_start));
         $end_date = date("Y-m-d", strtotime($end . '+1 day'));
 
@@ -94,9 +111,10 @@ class Shift extends CI_Controller
         echo json_encode($object);
     }
 
-    public function getDateInMonth($periode){
-        $date_start = $periode.'-01';
-        $start = $month = strtotime($date_start.'-01');
+    public function getDateInMonth($periode)
+    {
+        $date_start = $periode . '-01';
+        $start = $month = strtotime($date_start . '-01');
         $end = date("Y-m-t", strtotime($date_start));
         $end_date = date("Y-m-d", strtotime($end . '+1 day'));
 
@@ -115,17 +133,18 @@ class Shift extends CI_Controller
         return $date_arr;
     }
 
-    public function download_template_jadwal(){
+    public function download_template_jadwal()
+    {
         $date = $this->getDateInMonth($_GET['periode']);
         // echopre($date);
         $excel = new PHPExcel();
         $excel->getProperties()->setCreator('PT. Delta Indratama Orion')
-             ->setLastModifiedBy('PT. Delta Indratama Orion')
-             ->setTitle("Template Jadwal Shift")
-             ->setSubject("Jadwal Shift Pegawai")
-             ->setDescription("Template untuk upload jadwal shift pegawai");
+            ->setLastModifiedBy('PT. Delta Indratama Orion')
+            ->setTitle("Template Jadwal Shift")
+            ->setSubject("Jadwal Shift Pegawai")
+            ->setDescription("Template untuk upload jadwal shift pegawai");
 
-        
+
         $style_col = array(
             'font' => array('bold' => true), // Set font nya jadi bold
             'alignment' => array(
@@ -139,7 +158,7 @@ class Shift extends CI_Controller
                 'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN) // Set border left dengan garis tipis
             )
         );
-        
+
         // Buat sebuah variabel untuk menampung pengaturan style dari isi tabel
         $style_row = array(
             'alignment' => array(
@@ -154,16 +173,16 @@ class Shift extends CI_Controller
         );
 
         $style_mandatory = array(
-                'fill' => array(
-                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => 'ed5565;')
-                )
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => 'ED5565')
+            )
         );
 
         $style_col_mandatory = array(
             'fill' => array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                'color' => array('rgb' => 'ed5565;')
+                'color' => array('rgb' => 'ED5565')
             ),
             'font' => array('bold' => true), // Set font nya jadi bold
             'alignment' => array(
@@ -191,7 +210,7 @@ class Shift extends CI_Controller
         $excel->setActiveSheetIndex()->getProtection()->setSheet(true);
         $excel->setActiveSheetIndex()->getStyle('A5:AZ1000')->getProtection()->setLocked(PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
 
-        $excel->getActiveSheet()->getStyle('D2')->applyFromArray($style_col_mandatory);    
+        $excel->getActiveSheet()->getStyle('D2')->applyFromArray($style_col_mandatory);
         $excel->setActiveSheetIndex(0)->setCellValue('E2', ' * Wajib Diisi');
 
         // Buat header tabel nya pada baris ke 3
@@ -212,18 +231,18 @@ class Shift extends CI_Controller
         $indexCol = 0;
         // echopre($date);
         foreach ($date as $k => $v) {
-            if ($k > count($continueCol)-1) {
-                if ($indexCol > count($continueCol)-1) {
+            if ($k > count($continueCol) - 1) {
+                if ($indexCol > count($continueCol) - 1) {
                     $indexCol = 0;
                 }
-                $column = 'A'.$startCol[$indexCol];
-            }else{
+                $column = 'A' . $startCol[$indexCol];
+            } else {
                 $column = $continueCol[$indexCol];
             }
             // $testcolumn[]= $v['date'];
-            
-            $excel->setActiveSheetIndex(0)->setCellValue($column.'3', $v['date']); // Set kolom F3 dengan tulisan "ALAMAT"
-            $excel->setActiveSheetIndex(0)->setCellValue($column.'4', $v['day']); // Set kolom F3 dengan tulisan "ALAMAT"
+
+            $excel->setActiveSheetIndex(0)->setCellValue($column . '3', $v['date']); // Set kolom F3 dengan tulisan "ALAMAT"
+            $excel->setActiveSheetIndex(0)->setCellValue($column . '4', $v['day']); // Set kolom F3 dengan tulisan "ALAMAT"
 
             $indexCol++;
         }
@@ -232,23 +251,23 @@ class Shift extends CI_Controller
         // Apply style header yang telah kita buat tadi ke masing-masing kolom header
         $excel->getActiveSheet()->getStyle('A3')->applyFromArray($style_col);
         foreach (range('A', 'E') as $key => $value) {
-            for ($i=3; $i <= 4 ; $i++) { 
-                $excel->getActiveSheet()->getStyle($value.$i)->applyFromArray($style_col);    
+            for ($i = 3; $i <= 4; $i++) {
+                $excel->getActiveSheet()->getStyle($value . $i)->applyFromArray($style_col);
             }
         }
 
         $indexColStyle = 0;
         foreach ($date as $key => $value) {
-            if ($key > count($continueCol)-1) {
-                if ($indexColStyle > count($continueCol)-1) {
+            if ($key > count($continueCol) - 1) {
+                if ($indexColStyle > count($continueCol) - 1) {
                     $indexColStyle = 0;
                 }
-                $columnStyle = 'A'.$startCol[$indexColStyle];
-            }else{
+                $columnStyle = 'A' . $startCol[$indexColStyle];
+            } else {
                 $columnStyle = $continueCol[$indexColStyle];
             }
-            for ($i=3; $i <= 4 ; $i++) { 
-                $excel->getActiveSheet()->getStyle($columnStyle.$i)->applyFromArray($style_col_mandatory);    
+            for ($i = 3; $i <= 4; $i++) {
+                $excel->getActiveSheet()->getStyle($columnStyle . $i)->applyFromArray($style_col_mandatory);
             }
             $indexColStyle++;
         }
@@ -270,7 +289,7 @@ class Shift extends CI_Controller
         $excel->setActiveSheetIndex(0);
 
         // Proses file excel
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Type: application/vnd.ms-excel'); //openxmlformats-officedocument.spreadsheetml.sheet
         header('Content-Disposition: attachment; filename="Template Jadwal Shift.xlsx"'); // Set nama file excel nya
         header('Cache-Control: max-age=0');
 
@@ -282,9 +301,9 @@ class Shift extends CI_Controller
         ob_end_clean();
 
         $response =  array(
-                'op' => 'ok',
-                'file' => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
-            );
+            'op' => 'ok',
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
 
         die(json_encode($response));
     }
@@ -302,10 +321,10 @@ class Shift extends CI_Controller
         $periode = null;
 
         foreach ($sheets as $k => $v) {
-            if($k == 1)
-            $periode = $v[1]; 
-            if($k >= 4)
-            array_push($data, $v);
+            if ($k == 1)
+                $periode = $v[1];
+            if ($k >= 4)
+                array_push($data, $v);
         }
         // echopre($periode);
 
@@ -313,9 +332,9 @@ class Shift extends CI_Controller
         foreach ($data as $k => $v) {
             $tgl = 1;
             foreach ($v as $kk => $vv) {
-                if($kk >= 5){
+                if ($kk >= 5) {
                     $map[$itr]['nik'] = $v['4'];
-                    $map[$itr]['date'] = $periode.'-'.$tgl;
+                    $map[$itr]['date'] = $periode . '-' . $tgl;
                     $map[$itr]['shift'] = $vv;
 
                     $tgl++;
@@ -328,16 +347,16 @@ class Shift extends CI_Controller
         $ins = 0;
         foreach ($map as $k => $v) {
             $checkNip = $this->Pegawai_m->cek_id($v['nik']);
-            if(!empty($checkNip)){
+            if (!empty($checkNip)) {
                 $dataIns = array(
                     'id_pegawai' => $checkNip,
                     'shift' => $v['shift'],
                     'date' => $v['date'],
-                    
+
                 );
                 $insert = $this->Shift_m->save_add($dataIns);
-                if($insert)
-                $ins++;
+                if ($insert)
+                    $ins++;
             }
         }
         // $data_obj = (object)$ins;

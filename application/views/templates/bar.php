@@ -64,6 +64,10 @@
 							</ul>
 					</li>
 					<li>
+						<a href="<?php echo base_url() ?>Shift/"><i class="fa fa-table"></i> <span class="nav-label">Data Shift</span></a>
+
+					</li>
+					<li>
 						<a href="<?php echo base_url() ?>Ver_lembur/"><i class="fa fa-clock-o"></i> <span class="nav-label">Data Lembur</span></a>
 
 					</li>
@@ -96,6 +100,9 @@
 
 				<?php } else { ?>
 
+					<li>
+						<a href="<?php echo base_url() ?>Shift/index2"><i class="fa fa-table"></i> <span class="nav-label">Data Shift</span></a>
+					</li>
 					<li>
 						<a href="<?php echo base_url() ?>R_absensi/"><i class="fa fa-calendar-o"></i> <span class="nav-label">Report Harian</span></a>
 					</li>
