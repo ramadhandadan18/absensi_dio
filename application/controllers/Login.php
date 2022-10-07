@@ -10,7 +10,14 @@ class Login extends CI_Controller
 		parent::__construct();
 		$this->load->model('Login_m');
 		if ($this->session->userdata('is_login')) {
-			redirect('Pegawai');
+			if ($this->session->userdata('role') == '1')
+				redirect("Pegawai");
+			else if ($this->session->userdata('role') == '2')
+				redirect("Absensi");
+			else if ($this->session->userdata('role') == '3')
+				redirect("R_absensi");
+			else
+				redirect("Absensi");
 		}
 	}
 
